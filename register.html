@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký - PCShop</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <main class="container">
+    <form class="form-page" id="register-form" novalidate>
+      <h1>Tạo tài khoản</h1>
+      <p class="subtitle">Đăng ký để mua sắm nhanh hơn và theo dõi đơn hàng</p>
+
+      <div class="form-group">
+        <label for="reg-name">Họ và tên</label>
+        <input type="text" id="reg-name" name="fullname" placeholder="Nguyễn Văn A">
+        <div class="form-error" data-error-for="fullname"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email">Email</label>
+        <input type="email" id="reg-email" name="email" placeholder="email@example.com">
+        <div class="form-error" data-error-for="email"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Mật khẩu</label>
+        <input type="password" id="reg-password" name="password" placeholder="Tối thiểu 6 ký tự">
+        <div class="form-error" data-error-for="password"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-confirm">Xác nhận mật khẩu</label>
+        <input type="password" id="reg-confirm" name="confirmPassword" placeholder="Nhập lại mật khẩu">
+        <div class="form-error" data-error-for="confirmPassword"></div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Đăng ký</button>
+
+      <div class="form-footer-link">
+        Đã có tài khoản? <a href="login.html">Đăng nhập</a>
+      </div>
+    </form>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

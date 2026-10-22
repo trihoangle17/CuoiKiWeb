@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liên hệ - PCShop</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header id="site-header" class="site-header"></header>
+
+  <main class="container page-content">
+    <nav class="breadcrumb"><a href="index.html">Trang chủ</a> / <span>Liên hệ</span></nav>
+
+    <h1>Liên hệ với chúng tôi</h1>
+    <p>Có thắc mắc về sản phẩm hoặc cần tư vấn build PC? Gửi thông tin cho chúng tôi, đội ngũ sẽ phản hồi trong vòng 24 giờ.</p>
+
+    <div class="contact-layout">
+      <form class="form-page" id="contact-form" novalidate style="margin:0;max-width:none">
+        <h1>Gửi liên hệ</h1>
+        <p class="subtitle">Điền thông tin bên dưới</p>
+
+        <div class="form-group">
+          <label for="contact-name">Họ và tên</label>
+          <input type="text" id="contact-name" name="name" placeholder="Nguyễn Văn A">
+          <div class="form-error" data-error-for="name"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-email">Email</label>
+          <input type="email" id="contact-email" name="email" placeholder="email@example.com">
+          <div class="form-error" data-error-for="email"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message">Nội dung</label>
+          <textarea id="contact-message" name="message" rows="5" placeholder="Nội dung cần tư vấn..."></textarea>
+          <div class="form-error" data-error-for="message"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Gửi liên hệ</button>
+      </form>
+
+      <div class="info-grid" style="grid-template-columns:1fr">
+        <div class="info-card">
+          <h3>Địa chỉ</h3>
+          <p>123 Đường Công Nghệ, Quận 1, TP. Hồ Chí Minh</p>
+        </div>
+        <div class="info-card">
+          <h3>Điện thoại</h3>
+          <p>0123 456 789</p>
+        </div>
+        <div class="info-card">
+          <h3>Email</h3>
+          <p>support@pcshop.vn</p>
+        </div>
+        <div class="info-card">
+          <h3>Giờ làm việc</h3>
+          <p>8:00 - 21:00, tất cả các ngày trong tuần</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <script src="assets/js/contact.js"></script>
+</body>
+</html>

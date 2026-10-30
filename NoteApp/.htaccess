@@ -1,0 +1,26 @@
+# ============================================================
+# NoteApp - .htaccess ở thư mục gốc
+# Hỗ trợ cả trường hợp DocumentRoot trỏ vào thư mục gốc (XAMPP htdocs)
+# lẫn trường hợp trỏ vào public/ (Docker / VirtualHost).
+# Đồng thời chặn tuyệt đối truy cập trực tiếp vào mã nguồn nội bộ.
+# ============================================================
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Chặn truy cập trực tiếp vào các thư mục nội bộ và file cấu hình nhạy cảm
+    RewriteRule ^(app|database|websocket)(/|$) - [F,L]
+    RewriteRule ^(\.env|config\.php|Dockerfile|docker-compose\.yml|readme\.txt|\.git)(/|$) - [F,L]
+
+    # Chuyển tiếp nội bộ mọi request còn lại vào thư mục public/
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>
+
+<FilesMatch "^(\.env|config\.php|Dockerfile|docker-compose\.yml)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>

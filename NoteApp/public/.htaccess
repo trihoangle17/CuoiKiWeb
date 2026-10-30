@@ -1,0 +1,24 @@
+# ============================================================
+# NoteApp - .htaccess cho front controller
+# Dat trong thu muc public/ (document root cua web server)
+# ============================================================
+
+RewriteEngine On
+
+# Khong cho truy cap truc tiep vao thu muc uploads chua file thuc thi
+<IfModule mod_rewrite.c>
+    # Neu request la file hoac thu muc thuc su ton tai thi phuc vu truc tiep
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Con lai chuyen huong het ve index.php kem theo query string
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>
+
+# Chan truy cap file an va cau hinh nhay cam
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes

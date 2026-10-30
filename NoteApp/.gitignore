@@ -1,0 +1,24 @@
+
+# Environment files - khong commit thong tin rieng tu
+.env
+.env.*
+
+# Dependencies
+vendor/
+node_modules/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# User uploaded files
+public/uploads/*
+!public/uploads/.htaccess

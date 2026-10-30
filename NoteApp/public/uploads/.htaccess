@@ -1,0 +1,14 @@
+# ============================================================
+# Chan thuc thi PHP va script trong thu muc uploads
+# De phong truong hop file upload bi gia mao thanh .php
+# ============================================================
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|pht|phar|cgi|pl)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes -ExecCGI

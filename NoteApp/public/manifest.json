@@ -1,0 +1,25 @@
+{
+    "name": "NoteApp - Quản lý ghi chú thông minh",
+    "short_name": "NoteApp",
+    "description": "Ứng dụng quản lý ghi chú hỗ trợ ngoại tuyến (PWA), chia sẻ cộng tác thời gian thực và AI.",
+    "start_url": "/notes",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4a6cf7",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/assets/images/icon-192.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/icon-512.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}

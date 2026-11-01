@@ -25,7 +25,7 @@ $sharedNotes = $sharedNotes ?? [];
 
 <?php if (empty($sharedNotes)): ?>
     <div class="empty-state text-center text-muted py-5">
-        <i class="bi bi-inbox display-4 d-block mb-3 opacity-50"></i>
+        <i class="bi bi-inbox display-4 d-block mb-3 text-secondary" aria-hidden="true"></i>
         <h2 class="h6 fw-semibold text-body">Chưa có ghi chú nào được chia sẻ với bạn</h2>
         <p class="small mb-0">Khi một người dùng khác chia sẻ ghi chú tới địa chỉ email của bạn, ghi chú sẽ xuất hiện tại đây.</p>
     </div>
@@ -36,9 +36,11 @@ $sharedNotes = $sharedNotes ?? [];
             $isEditable = ($sn['permission'] ?? 'view') === 'edit';
         ?>
             <article class="note-card shared-note-card" data-note-id="<?= (int) $sn['id'] ?>" data-locked="<?= $isLocked ? '1' : '0' ?>">
-                <a href="<?= $isLocked ? '#' : '/notes/edit/' . (int) $sn['id'] ?>"
-                   class="note-card-link pb-3"
-                   <?= $isLocked ? 'data-locked="1"' : '' ?>>
+                <?php if ($isLocked): ?>
+                <button type="button" class="note-card-link pb-3" data-locked="1" aria-haspopup="dialog">
+                <?php else: ?>
+                <a href="<?= '/notes/edit/' . (int) $sn['id'] ?>" class="note-card-link pb-3">
+                <?php endif; ?>
 
                     <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                         <span class="badge rounded-pill <?= $isEditable ? 'text-bg-success' : 'text-bg-secondary' ?>">
@@ -49,11 +51,17 @@ $sharedNotes = $sharedNotes ?? [];
                             <?php endif; ?>
                         </span>
 
-                        <div class="note-card-icons">
+                        <div class="note-card-icons" role="group" aria-label="Trạng thái ghi chú">
                             <?php if ($isLocked): ?>
-                                <i class="bi bi-lock-fill text-warning" title="Được khóa mật khẩu"></i>
+                                <span class="status-badge text-warning" title="Được khóa mật khẩu">
+                                    <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                                    <span class="visually-hidden">Đã khóa mật khẩu</span>
+                                </span>
                             <?php endif; ?>
-                            <i class="bi bi-people-fill text-success" title="Ghi chú được chia sẻ"></i>
+                            <span class="status-badge text-success" title="Ghi chú được chia sẻ">
+                                <i class="bi bi-people-fill" aria-hidden="true"></i>
+                                <span class="visually-hidden">Được chia sẻ</span>
+                            </span>
                         </div>
                     </div>
 
@@ -75,22 +83,23 @@ $sharedNotes = $sharedNotes ?? [];
                             <i class="bi bi-calendar-event me-1"></i>Thời điểm chia sẻ: <?= e(date('d/m/Y H:i', strtotime($sn['shared_at']))) ?> (<?= e(timeAgo($sn['shared_at'])) ?>)
                         </div>
                     </div>
-                </a>
+                <?= $isLocked ? '</button>' : '</a>' ?>
             </article>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>
 
 <!-- Modal nhập mật khẩu nếu ghi chú được chia sẻ có bật khóa mật khẩu -->
-<div class="modal fade" id="sharedLockModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="sharedLockModal" tabindex="-1" aria-hidden="true" aria-labelledby="sharedLockModalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="sharedUnlockForm">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-shield-lock-fill text-warning me-2"></i>Nhập mật khẩu ghi chú</h5>
+                    <h3 class="modal-title h5" id="sharedLockModalTitle"><i class="bi bi-shield-lock-fill text-warning-emphasis me-2"></i>Nhập mật khẩu ghi chú</h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
+                    <label for="sharedLockPasswordInput" class="visually-hidden">Mật khẩu khóa ghi chú</label>
                     <input type="password" class="form-control" id="sharedLockPasswordInput" placeholder="Mật khẩu khóa ghi chú..." required>
                     <div class="text-danger small mt-2 d-none" id="sharedLockError"></div>
                 </div>
@@ -117,6 +126,8 @@ $sharedNotes = $sharedNotes ?? [];
             container.classList.toggle('notes-list', mode === 'list');
             btnGrid?.classList.toggle('active', mode === 'grid');
             btnList?.classList.toggle('active', mode === 'list');
+            btnGrid?.setAttribute('aria-pressed', mode === 'grid' ? 'true' : 'false');
+            btnList?.setAttribute('aria-pressed', mode === 'list' ? 'true' : 'false');
         }
         btnGrid?.addEventListener('click', function () { setMode('grid'); });
         btnList?.addEventListener('click', function () { setMode('list'); });

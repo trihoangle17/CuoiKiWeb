@@ -24,10 +24,15 @@ class Mailer
     {
         $this->host = MAIL_HOST;
         $this->port = MAIL_PORT;
-        $this->username = MAIL_USERNAME;
-        $this->password = MAIL_PASSWORD;
+        $this->username = trim(MAIL_USERNAME);
+        // Tự động loại bỏ khoảng trắng nếu người dùng dán trực tiếp Gmail App Password dạng "xxxx xxxx xxxx xxxx"
+        $this->password = str_contains(strtolower($this->host), 'gmail.com')
+            ? str_replace(' ', '', MAIL_PASSWORD)
+            : MAIL_PASSWORD;
         $this->encryption = MAIL_ENCRYPTION;
-        $this->fromAddress = MAIL_FROM_ADDRESS;
+        $this->fromAddress = (MAIL_FROM_ADDRESS === '' || MAIL_FROM_ADDRESS === 'no-reply@noteapp.local') && filter_var($this->username, FILTER_VALIDATE_EMAIL)
+            ? $this->username
+            : MAIL_FROM_ADDRESS;
         $this->fromName = MAIL_FROM_NAME;
     }
 

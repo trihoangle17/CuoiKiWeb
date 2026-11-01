@@ -207,10 +207,11 @@ class AuthController
     }
 
     /**
-     * Đặt lại mật khẩu mới bằng 1 trong 2 cách:
-     * - Cách 1: Bấm trực tiếp vào liên kết trong email (/reset-password?token=xxx)
-     * - Cách 2: Nhập địa chỉ Email + mã OTP 6 số nhận được trong email
-     * Sau khi đặt lại thành công, bắt buộc người dùng đăng nhập lại thủ công.
+     * Đặt lại mật khẩu mới theo đúng quy trình 2 bước:
+     * - Bước xác thực: Bấm vào liên kết trong email (/reset-password?token=xxx)
+     *   HOẶC nhập Email + mã OTP 6 chữ số để hệ thống xác thực rồi chuyển hướng
+     *   (redirect) sang màn hình nhập mật khẩu mới (/reset-password?token=xxx).
+     * - Bước đặt mật khẩu mới: Nhập mật khẩu mới 2 lần, lưu bcrypt và yêu cầu đăng nhập lại thủ công.
      */
     public function resetPassword(): void
     {
@@ -220,21 +221,63 @@ class AuthController
 
         $db = Database::getInstance();
         $errors = [];
+        $tokenInvalid = false;
 
         $token = trim($_GET['token'] ?? ($_POST['token'] ?? ''));
         $email = trim($_GET['email'] ?? ($_POST['email'] ?? ''));
+        $step = trim($_POST['step'] ?? '');
+
+        // Nếu truy cập màn hình nhập mật khẩu mới qua token (GET), kiểm tra hiệu lực token ngay
+        if (requestMethod() === 'GET' && $token !== '') {
+            $stmt = $db->prepare(
+                'SELECT pr.id
+                 FROM password_resets pr
+                 INNER JOIN users u ON u.id = pr.user_id
+                 WHERE pr.token = :token AND pr.used_at IS NULL AND pr.expires_at >= NOW()
+                 ORDER BY pr.id DESC LIMIT 1'
+            );
+            $stmt->execute(['token' => $token]);
+            if (!$stmt->fetch()) {
+                $tokenInvalid = true;
+                $errors[] = 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.';
+            }
+        }
 
         if (requestMethod() === 'POST') {
             requireCsrf();
 
-            $otp = trim($_POST['otp'] ?? '');
-            $password = $_POST['password'] ?? '';
-            $passwordConfirm = $_POST['password_confirm'] ?? '';
+            // Trường hợp 1: Người dùng gửi mã OTP để xác thực -> chuyển hướng sang màn hình nhập mật khẩu mới
+            if ($step === 'verify_otp' || $token === '') {
+                $otp = trim($_POST['otp'] ?? '');
 
-            $resetRecord = null;
+                if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $errors[] = 'Vui lòng nhập đúng email đã yêu cầu đặt lại mật khẩu.';
+                } elseif ($otp === '') {
+                    $errors[] = 'Vui lòng nhập mã OTP gồm 6 chữ số từ email.';
+                } else {
+                    $stmt = $db->prepare(
+                        'SELECT pr.token
+                         FROM password_resets pr
+                         INNER JOIN users u ON u.id = pr.user_id
+                         WHERE u.email = :email AND pr.otp_code = :otp
+                           AND pr.used_at IS NULL AND pr.expires_at >= NOW()
+                         ORDER BY pr.id DESC LIMIT 1'
+                    );
+                    $stmt->execute(['email' => $email, 'otp' => $otp]);
+                    $otpRecord = $stmt->fetch();
 
-            if ($token !== '') {
-                // Xác thực theo liên kết (token) trong email
+                    if (!$otpRecord) {
+                        $errors[] = 'Mã OTP hoặc email không chính xác, hoặc mã đã hết hạn.';
+                    } else {
+                        // Xác thực OTP thành công -> Chuyển hướng tới màn hình nhập mật khẩu mới
+                        redirect('/reset-password?token=' . urlencode((string) $otpRecord['token']));
+                    }
+                }
+            } else {
+                // Trường hợp 2: Đã ở màn hình nhập mật khẩu mới (có token hợp lệ)
+                $password = $_POST['password'] ?? '';
+                $passwordConfirm = $_POST['password_confirm'] ?? '';
+
                 $stmt = $db->prepare(
                     'SELECT pr.*, u.id AS user_id
                      FROM password_resets pr
@@ -246,58 +289,31 @@ class AuthController
                 $resetRecord = $stmt->fetch();
 
                 if (!$resetRecord) {
-                    $errors[] = 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.';
-                }
-            } else {
-                // Xác thực theo Email + mã OTP 6 chữ số
-                if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $errors[] = 'Vui lòng nhập đúng email đã yêu cầu đặt lại mật khẩu.';
-                } elseif ($otp === '') {
-                    $errors[] = 'Vui lòng nhập mã OTP gồm 6 chữ số từ email.';
-                } else {
-                    $stmt = $db->prepare(
-                        'SELECT pr.*, u.id AS user_id
-                         FROM password_resets pr
-                         INNER JOIN users u ON u.id = pr.user_id
-                         WHERE u.email = :email AND pr.otp_code = :otp
-                           AND pr.used_at IS NULL AND pr.expires_at >= NOW()
-                         ORDER BY pr.id DESC LIMIT 1'
-                    );
-                    $stmt->execute(['email' => $email, 'otp' => $otp]);
-                    $resetRecord = $stmt->fetch();
-
-                    if (!$resetRecord) {
-                        $errors[] = 'Mã OTP hoặc email không chính xác, hoặc mã đã hết hạn.';
-                    }
-                }
-            }
-
-            if (empty($errors)) {
-                if (strlen($password) < 6) {
+                    $tokenInvalid = true;
+                    $errors[] = 'Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.';
+                } elseif (strlen($password) < 6) {
                     $errors[] = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
                 } elseif ($password !== $passwordConfirm) {
                     $errors[] = 'Mật khẩu xác nhận không khớp.';
+                } else {
+                    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+                    $this->userModel->updatePassword((int) $resetRecord['user_id'], $passwordHash);
+                    $this->userModel->resetFailedLogin((int) $resetRecord['user_id']);
+
+                    // Vô hiệu hóa tất cả mã reset chưa dùng của user này
+                    $markUsed = $db->prepare(
+                        'UPDATE password_resets SET used_at = NOW() WHERE user_id = :uid AND used_at IS NULL'
+                    );
+                    $markUsed->execute(['uid' => $resetRecord['user_id']]);
+
+                    // Yêu cầu người dùng đăng nhập lại thủ công
+                    setFlash('success', 'Đặt lại mật khẩu thành công. Vui lòng đăng nhập bằng mật khẩu mới.');
+                    redirect('/login');
                 }
-            }
-
-            if (empty($errors) && $resetRecord) {
-                $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-                $this->userModel->updatePassword((int) $resetRecord['user_id'], $passwordHash);
-                $this->userModel->resetFailedLogin((int) $resetRecord['user_id']);
-
-                // Vô hiệu hóa tất cả mã reset chưa dùng của user này
-                $markUsed = $db->prepare(
-                    'UPDATE password_resets SET used_at = NOW() WHERE user_id = :uid AND used_at IS NULL'
-                );
-                $markUsed->execute(['uid' => $resetRecord['user_id']]);
-
-                // Yêu cầu người dùng đăng nhập lại thủ công
-                setFlash('success', 'Đặt lại mật khẩu thành công. Vui lòng đăng nhập bằng mật khẩu mới.');
-                redirect('/login');
             }
         }
 
-        $pageTitle = 'Đặt lại mật khẩu';
+        $pageTitle = $token !== '' ? 'Đặt lại mật khẩu mới' : 'Xác thực mã OTP';
         $viewFile = __DIR__ . '/../views/auth/reset_password.php';
         require __DIR__ . '/../views/layouts/guest.php';
     }

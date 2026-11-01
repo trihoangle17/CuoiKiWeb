@@ -9,9 +9,9 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="labelManageModalTitle">
+                <h3 class="modal-title h5" id="labelManageModalTitle">
                     <i class="bi bi-tags me-2 text-primary"></i>Quản lý nhãn
-                </h5>
+                </h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
             <div class="modal-body">

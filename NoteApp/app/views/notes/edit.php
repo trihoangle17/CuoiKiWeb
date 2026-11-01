@@ -243,7 +243,7 @@ $isPinned = (int) ($note['is_pinned'] ?? 0) === 1;
         <div class="modal-content">
             <form id="setLockForm">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="setLockModalTitle"><i class="bi bi-shield-lock text-warning me-2"></i>Đặt mật khẩu khóa ghi chú</h5>
+                    <h3 class="modal-title h5" id="setLockModalTitle"><i class="bi bi-shield-lock text-warning-emphasis me-2"></i>Đặt mật khẩu khóa ghi chú</h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
@@ -273,7 +273,7 @@ $isPinned = (int) ($note['is_pinned'] ?? 0) === 1;
         <div class="modal-content">
             <form id="changeLockForm">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="changeLockModalTitle"><i class="bi bi-key text-primary me-2"></i>Đổi mật khẩu khóa ghi chú</h5>
+                    <h3 class="modal-title h5" id="changeLockModalTitle"><i class="bi bi-key text-primary me-2"></i>Đổi mật khẩu khóa ghi chú</h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
@@ -306,7 +306,7 @@ $isPinned = (int) ($note['is_pinned'] ?? 0) === 1;
         <div class="modal-content">
             <form id="removeLockForm">
                 <div class="modal-header">
-                    <h5 class="modal-title text-danger" id="removeLockModalTitle"><i class="bi bi-unlock me-2"></i>Tắt bảo vệ mật khẩu</h5>
+                    <h3 class="modal-title h5 text-danger" id="removeLockModalTitle"><i class="bi bi-unlock me-2"></i>Tắt bảo vệ mật khẩu</h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
@@ -331,7 +331,7 @@ $isPinned = (int) ($note['is_pinned'] ?? 0) === 1;
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-danger" id="deleteEditNoteModalTitle"><i class="bi bi-trash3 me-2"></i>Xác nhận xóa ghi chú</h5>
+                <h3 class="modal-title h5 text-danger" id="deleteEditNoteModalTitle"><i class="bi bi-trash3 me-2"></i>Xác nhận xóa ghi chú</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
             <div class="modal-body">

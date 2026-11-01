@@ -1,0 +1,2 @@
+# Buộc GitHub Linguist nhận diện toàn bộ file .php là PHP (tránh nhận nhầm thành Hack)
+*.php linguist-language=PHP

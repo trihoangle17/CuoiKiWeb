@@ -267,6 +267,7 @@ class NoteController
 
     /**
      * Ghim hoặc bỏ ghim ghi chú (chỉ chủ sở hữu mới ghim trên danh sách của mình).
+     * Nếu ghi chú đang bật khóa mật khẩu, bắt buộc xác thực mật khẩu khóa trước khi thao tác.
      */
     public function togglePin(string $id): void
     {
@@ -281,6 +282,20 @@ class NoteController
         $note = $this->noteModel->findById($noteId);
         if (!$note) {
             jsonResponse(['error' => 'Không tìm thấy ghi chú.'], 404);
+        }
+
+        if ((int) $note['is_locked'] === 1) {
+            $lockPassword = $_POST['lock_password'] ?? '';
+            if ($lockPassword !== '') {
+                if (!$this->noteModel->verifyLockPassword($noteId, $lockPassword)) {
+                    jsonResponse(['error' => 'Mật khẩu khóa ghi chú không chính xác.'], 422);
+                }
+            } elseif (!$this->isNoteUnlockedInSession($noteId)) {
+                jsonResponse([
+                    'error' => 'Vui lòng nhập mật khẩu khóa của ghi chú để thực hiện thao tác.',
+                    'require_lock_password' => true,
+                ], 403);
+            }
         }
 
         $newPinned = !((bool) $note['is_pinned']);

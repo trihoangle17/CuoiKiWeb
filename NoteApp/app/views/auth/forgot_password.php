@@ -20,15 +20,27 @@ $submittedEmail = $submittedEmail ?? '';
 <?php endif; ?>
 
 <?php if ($sent): ?>
-    <div class="alert alert-success" role="alert">
+    <div class="alert alert-success small" role="alert">
         <i class="bi bi-envelope-check-fill me-1"></i>
         Nếu địa chỉ email tồn tại trong hệ thống, chúng tôi đã gửi <strong>liên kết đặt lại mật khẩu</strong> cùng <strong>mã OTP 6 chữ số</strong> đến hộp thư của bạn.
     </div>
-    <div class="d-grid gap-2 mt-3">
-        <a href="/reset-password?email=<?= urlencode($submittedEmail) ?>" class="btn btn-primary">
-            <i class="bi bi-key me-1"></i>Nhập mã OTP để đặt lại mật khẩu
-        </a>
-    </div>
+
+    <form method="post" action="/reset-password" class="mt-3" novalidate>
+        <?= csrfField() ?>
+        <input type="hidden" name="step" value="verify_otp">
+        <input type="hidden" name="email" value="<?= e($submittedEmail) ?>">
+
+        <div class="mb-3">
+            <label for="otp" class="form-label fw-medium">Nhập mã OTP 6 chữ số từ email</label>
+            <input type="text" class="form-control text-center fw-bold fs-5 letter-spacing-otp" id="otp" name="otp"
+                   required autofocus inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+            <div class="form-text small">Hoặc bạn có thể bấm trực tiếp vào liên kết trong email để tới màn hình đặt mật khẩu mới.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 fw-semibold">
+            <i class="bi bi-shield-check me-1"></i>Xác thực mã OTP
+        </button>
+    </form>
 <?php else: ?>
     <p class="text-muted text-center small mb-4">
         Nhập email đã đăng ký, hệ thống sẽ gửi liên kết khôi phục và mã OTP 6 số cho bạn.

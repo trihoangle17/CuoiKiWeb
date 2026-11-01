@@ -33,7 +33,7 @@ $avatarSrc = !empty($currentUser['avatar_path']) ? e($currentUser['avatar_path']
                         type="search"
                         id="noteSearchInput"
                         class="form-control bg-body-tertiary border-start-0"
-                        placeholder="Tìm kiếm ghi chú theo tiêu đề hoặc nội dung..."
+                        placeholder="Tìm kiếm ghi chú... (Ctrl+K hoặc /)"
                         autocomplete="off">
                 </div>
             </div>

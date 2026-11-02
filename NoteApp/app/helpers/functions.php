@@ -103,9 +103,11 @@ function requireCsrf(): void
         if (isAjaxRequest()) {
             jsonResponse(['error' => 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang.'], 419);
         }
-        http_response_code(419);
-        echo 'Phiên làm việc không hợp lệ hoặc đã hết hạn. Vui lòng tải lại trang.';
-        exit;
+        // Tái tạo token CSRF mới để tránh bị lỗi liên tiếp khi thử lại
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        setFlash('error', 'Phiên làm việc đã hết hạn hoặc không hợp lệ. Vui lòng thử lại.');
+        $referer = $_SERVER['HTTP_REFERER'] ?? '/login';
+        redirect($referer);
     }
 }
 

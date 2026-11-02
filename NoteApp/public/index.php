@@ -23,13 +23,16 @@ if (PHP_SAPI === 'cli-server') {
 
 require_once __DIR__ . '/../config.php';
 
-// Cấu hình cookie phiên làm việc an toàn (HttpOnly, SameSite=Lax)
+// Cấu hình cookie phiên làm việc an toàn (HttpOnly, SameSite=Lax, Secure khi chạy HTTPS)
 if (session_status() === PHP_SESSION_NONE) {
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
     session_set_cookie_params([
         'lifetime' => SESSION_LIFETIME * 60,
         'path' => '/',
         'httponly' => true,
         'samesite' => 'Lax',
+        'secure' => $isHttps,
     ]);
     session_start();
 }
